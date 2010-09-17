@@ -11,8 +11,10 @@
     protected $_unparse;
     protected $_was_php;
     protected $_deep;
-    public function __construct($context = null) {
+    protected $_eval_context;
+    public function __construct($context = null, $eval_context = null) {
       $this->_context = $context;
+      $this->_eval_context = $eval_context;
       $this->init();
     }
 
@@ -41,8 +43,8 @@
       return $this->_;
     }
 
-    public static function parse2($text,$context = null) {
-      $h = new Haml($context);
+    public static function parse2($text, $context = null, $eval_context = null) {
+      $h = new Haml($context,$eval_context);
       return $h->parse($text);
     }
 
@@ -81,14 +83,14 @@
         return '';
       }
       if (preg_match('|^\s*//|',$line) != 0) return '';
-      if (preg_match('/^\s*- (.*)$/',$line) != 0) {
+      if (preg_match('/^\s*\- (.*)$/',$line) != 0) {
         if ($increase) $this->pushStack(self::_PHP);
         return '<?php '.substr(ltrim($line),2).($increase ? '{' : '').'?>';
       }
-      if (preg_match('/^\s*-= (.*)$/',$line,$arr) != 0) return $this->_echo($arr[1]);
-      if (preg_match('|^\s*-/$|',$line) != 0) return "\n";
+      if (preg_match('/^\s*\-= (.*)$/',$line,$arr) != 0) return $this->_echo($arr[1]);
+      if (preg_match('|^\s*\-/$|',$line) != 0) return "\n";
+      if (preg_match('/^(\s*)\-e (.*)$/',$line,$arr) != 0) return $this->parseLine($arr[1].($this->_eval($arr[2])),$increase);
       if (preg_match('/^\s*\\\\/',$line) != 0) return substr(ltrim($line),1);
-
       if (preg_match('/^\s*(?:%('.self::LITERAL.'))?((?:\.'.self::LITERAL.')*)(?:#('.self::LITERAL.'))?(?:\{([^\}]*)\})?(\=)?(.*)$/',$line,$arr) != 0 && (!empty($arr[1]) || !empty($arr[2]) || !empty($arr[3]) || !empty($arr[4]) || !empty($arr[5]))) return ($this->parseLineCommon($line,$arr));
       if (preg_match('|^\s*/|',$line) != 0) return $this->parseLineComment($line);
       return ltrim($line);
@@ -173,11 +175,16 @@
     }
 
     protected function getVariable($var) {
-      return $this->_echo(call_user_func_array($this->_context,substr($var,1)));
+      $str = is_null($this->_context) ? $var : call_user_func_array($this->_context,substr($var,1));
+      return $this->_echo($str);
     }
 
     protected function _echo($str) {
       return '<?php echo '.$str.';?>';
+    }
+
+    protected function _eval($str) {
+      return is_null($this->_eval_context) ? eval($str) : call_user_func_array($this->_eval_context,$str);
     }
 
     protected function pushStack($element, $deep = null) {
