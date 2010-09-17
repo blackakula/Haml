@@ -1,0 +1,2 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<html><head><title>Title</title><meta http-equiv="Content-Type" content="text/html;charset=utf-8" /></head><body><img src="<?php echo get_var('src');?>" alt="" /><input type="text" value="asdf" /><textarea></textarea><br />end of file</body></html>

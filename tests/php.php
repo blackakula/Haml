@@ -1,0 +1,2 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head><title>Title</title></head><body><table><?php $arr = array();?><?php $arr[0] = array('a','b','c');?><?php $arr[1] = array('d','e','f');?><?php foreach($arr as $row){?><tr><?php foreach($row as $col){?><td><?php echo $col;?></td><?php }?></tr><?php }?></table></body></html>

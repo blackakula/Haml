@@ -1,0 +1,14 @@
+!!! Strict
+%html
+  %head
+    %title Title
+  %body
+    %table
+      - $arr = array();
+      - $arr[0] = array('a','b','c');
+      - $arr[1] = array('d','e','f');
+      - foreach($arr as $row)
+        %tr
+          - foreach($row as $col)
+            %td
+              -= $col

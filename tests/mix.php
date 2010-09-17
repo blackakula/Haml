@@ -1,0 +1,2 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><title><?php echo $title;?></title></head><body><?php for ($i = 0; $i < 10; ++$i){?><div class="class_name" attr1="<?php echo get_var('val1');?>" <?php echo get_var('attr2');?>="val2"></div><div id="t_id" class="class_name2"></div><tag id="t_id2"></tag><?php }?></body></html>

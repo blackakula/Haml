@@ -1,0 +1,2 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html><head><title>This is title</title></head><body>%donottagme.meneither#ohnoo{not="us"}<tagme id="cool" class="meto"></tagme>/do not comment me<!--comment me--></body></html>
