@@ -1,8 +1,8 @@
 <?php
   class Haml {
 
-    const LITERAL = '[-\w\$_0-9]+';
-    const _VAR = '/^\$[\w_0-9]+$/';
+    const LITERAL = '[-\w\$_0-9\[\]]+';
+    const _VAR = '/^\$[\w_0-9\[\]]+$/';
     const ELEMENT = '/^[\w_][-\w_0-9]*$/';
     const _PHP = '<PHP>';
     protected $_;
