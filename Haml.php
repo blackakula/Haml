@@ -1,8 +1,9 @@
 <?php
   class Haml {
 
-    const LITERAL = '[-\w\$_0-9\[\]]+';
-    const _VAR = '/^\$[\w_0-9\[\]]+$/';
+    const LITERAL = '[-\w\$_0-9\[\]]+|<\?.*?\?>';
+    const _PHP_VAR = '/^<\?.*?\?>$/';
+    const _VAR = '/^(\$[\w_0-9\[\]]+|<\?.*?\?>)$/';
     const ELEMENT = '/^[\w_][-\w_0-9]*$/';
     const _PHP = '<PHP>';
     protected $_;
@@ -175,6 +176,7 @@
     }
 
     protected function getVariable($var) {
+      if (preg_match(self::_PHP_VAR,$var) != 0) return $var;
       $str = is_null($this->_context) ? $var : call_user_func_array($this->_context,substr($var,1));
       return $this->_echo($str);
     }

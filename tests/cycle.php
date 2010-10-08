@@ -1,0 +1,2 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html><head><title>Cycle</title></head><body><ul><?php for ($i = 0; $i < 3; ++$i){?><li class="<?php echo get_var('i');?>"><?php echo 'Item '.$i;?></li><?php }?></ul></body></html>
