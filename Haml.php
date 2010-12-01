@@ -71,18 +71,27 @@
     }
 
     protected function parseLine($line,$increase = false) {
-      if ($this->_unparse && $line != $this->_unparse) return $line."\n";
+      if ($this->_unparse && ltrim($line) != $this->_unparse) return $line."\n";
       if ($this->_unparse) {
+        if ($this->_unparse == '?>') $this->_ .= '?>';
         $this->_unparse = false;
         return '';
       }
 
       if (empty($this->_) && substr($line,0,3) == '!!!') return $this->parseLineDoctype($line)."\n";
+      #check unparse
       if (preg_match('|^\s*<<<(.+)$|',$line,$res) != 0) {
         $this->_unparse = $res[1];
         $this->_ .= "\n";
         return '';
       }
+      #check PHP injection
+      if (preg_match('|^\s*<\?php$|', $line) != 0) {
+        $this->_unparse = '?>';
+        $this->_ .= "<?php\n";
+        return '';
+      }
+      
       if (preg_match('|^\s*//|',$line) != 0) return '';
       if (preg_match('/^\s*\- (.*)$/',$line) != 0) {
         if ($increase) $this->pushStack(self::_PHP);
@@ -92,7 +101,7 @@
       if (preg_match('|^\s*\-/$|',$line) != 0) return "\n";
       if (preg_match('/^(\s*)\-e (.*)$/',$line,$arr) != 0) return $this->parseLine($arr[1].($this->_eval($arr[2])),$increase);
       if (preg_match('/^\s*\\\\/',$line) != 0) return substr(ltrim($line),1);
-      if (preg_match('/^\s*(?:%('.self::LITERAL.'))?((?:\.'.self::LITERAL.')*)(?:#('.self::LITERAL.'))?(?:\{([^\}]*)\})?(\=)?(.*)$/',$line,$arr) != 0 && (!empty($arr[1]) || !empty($arr[2]) || !empty($arr[3]) || !empty($arr[4]) || !empty($arr[5]))) return ($this->parseLineCommon($line,$arr));
+      if (preg_match('/^\s*(?:%('.self::LITERAL.'))?((?:\.(?:'.self::LITERAL.'))*)(?:#('.self::LITERAL.'))?(?:\{([^\}]*)\})?(\=)?(.*)$/',$line,$arr) != 0 && (!empty($arr[1]) || !empty($arr[2]) || !empty($arr[3]) || !empty($arr[4]) || !empty($arr[5]))) return ($this->parseLineCommon($line,$arr));
       if (preg_match('|^\s*/|',$line) != 0) return $this->parseLineComment($line);
       return ltrim($line);
     }

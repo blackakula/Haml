@@ -8,4 +8,6 @@ body {
   background-color:white;
   color:black;
 }
-</style><tag><?php echo 'Some text';?></tag></body></html>
+</style>
+      <p>If you want this to be aligned, do it aligned</p>
+<tag><?php echo 'Some text';?></tag></body></html>
