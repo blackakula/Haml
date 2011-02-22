@@ -8,7 +8,7 @@ class HamlTest extends PHPUnit_Framework_TestCase
     public function __construct() { $this->context = new Context(); }
 
     public function tests() {
-      foreach (array('comments','escape','mix','php','single_tags','unparse','cycle','php2','php3') as $f) {
+      foreach (array('comments','escape','mix','php','single_tags','unparse','cycle','php2','php3','html5') as $f) {
         $input = file_get_contents('./tests/'.$f.'.haml');
         $result = file_get_contents('./tests/'.$f.'.php');
 

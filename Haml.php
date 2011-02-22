@@ -1,6 +1,8 @@
 <?php
   class Haml {
 
+    protected static $html5 = false;
+
     const LITERAL = '[-\w\$_0-9\[\]]+|<\?.*?\?>';
     const _PHP_VAR = '/^<\?.*?\?>$/';
     const _VAR = '/^(\$[\w_0-9\[\]]+|<\?.*?\?>)$/';
@@ -47,6 +49,10 @@
     public static function parse2($text, $context = null, $eval_context = null) {
       $h = new Haml($context,$eval_context);
       return $h->parse($text);
+    }
+
+    public static function html5($on = true) {
+      self::$html5 = $on;
     }
 
     protected function popStack($current_deep) {
@@ -128,13 +134,16 @@
       $params = ltrim($arr[4]);
       if (!empty($params)) {
         $params_result = array();
-        $regexp = '/^('.self::LITERAL.')\="([^"]*)"/';
+        $regexp = '/^('.self::LITERAL.')(?:\="([^"]*)")?/';
         while (preg_match($regexp,$params,$param) != 0) {
           $attr = $this->parseElement($param[1]);
           if ($attr === false) return $line;
-          $value = $param[2];
-          if (preg_match(self::_VAR,$value) != 0) $value = $this->getVariable($value);
-          array_push($params_result,' '.$attr.'="'.$value.'"');
+          if (array_key_exists(2, $param)) {
+            $value = $param[2];
+            if (preg_match(self::_VAR,$value) != 0) $value = $this->getVariable($value);
+            array_push($params_result,' '.$attr.'="'.$value.'"');
+          } else
+            array_push($params_result,' '.$attr);
           $params = ltrim(preg_replace($regexp,'',$params));
         }
         if (!empty($params)) return $line;
@@ -152,7 +161,7 @@
 
       $result = '<'.$tag.($id ? (' id="'.$id.'"') : '').($classes ? (' class="'.$classes.'"') : '').($params ? implode('',$params) : '');
       if ($close_tag)
-        $result .= ' />';
+        $result .= self::$html5 ? '>' : ' />';
       else {
         $this->pushStack($tag);
         $result .= '>'.$content;
@@ -166,6 +175,10 @@
         if ($temp == 'XML') return '<?xml version="1.0" encoding="utf-8" ?>';
         if ($temp == '1.1') return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">';
         if ($temp == 'Strict') return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
+        if ($temp == '5') {
+          self::html5();
+          return '<!DOCTYPE html>';
+        }
         if ($temp == '') return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
       } elseif (trim(substr($line,0,5)) == '!!!!') {
         $temp = trim(substr($line,4));
