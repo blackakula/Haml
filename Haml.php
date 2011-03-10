@@ -1,8 +1,6 @@
 <?php
   class Haml {
 
-    protected static $html5 = false;
-
     const LITERAL = '[-\w\$_0-9\[\]]+|<\?.*?\?>';
     const _PHP_VAR = '/^<\?.*?\?>$/';
     const _VAR = '/^(\$[\w_0-9\[\]]+|<\?.*?\?>)$/';
@@ -49,10 +47,6 @@
     public static function parse2($text, $context = null, $eval_context = null) {
       $h = new Haml($context,$eval_context);
       return $h->parse($text);
-    }
-
-    public static function html5($on = true) {
-      self::$html5 = $on;
     }
 
     protected function popStack($current_deep) {
@@ -151,7 +145,7 @@
       }else
         $params = false;
 
-      $close_tag = in_array($tag,array('br', 'hr', 'link', 'meta', 'img', 'input'));
+      $close_tag = in_array($tag,array('br', 'hr', 'link', 'meta', 'img', 'input', 'param'));
 
       $is_echo = ($arr[5] == '=');
       $content = ltrim($arr[6]);
@@ -161,7 +155,7 @@
 
       $result = '<'.$tag.($id ? (' id="'.$id.'"') : '').($classes ? (' class="'.$classes.'"') : '').($params ? implode('',$params) : '');
       if ($close_tag)
-        $result .= self::$html5 ? '>' : ' />';
+        $result .= ' />';
       else {
         $this->pushStack($tag);
         $result .= '>'.$content;
@@ -175,10 +169,7 @@
         if ($temp == 'XML') return '<?xml version="1.0" encoding="utf-8" ?>';
         if ($temp == '1.1') return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">';
         if ($temp == 'Strict') return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-        if ($temp == '5') {
-          self::html5();
-          return '<!DOCTYPE html>';
-        }
+        if ($temp == '5') return '<!DOCTYPE html>';
         if ($temp == '') return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
       } elseif (trim(substr($line,0,5)) == '!!!!') {
         $temp = trim(substr($line,4));
